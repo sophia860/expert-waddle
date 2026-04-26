@@ -1,0 +1,63 @@
+# ClawSite OS — Launch Agent
+# Autonomous promotion sequence for OpenClaw runtime
+# Edit the values below before running.
+
+config:
+  x_handle: "@YOURUSERNAME"
+  stripe_product_id: "prod_REPLACE_ME"
+  ad_budget_usd: 200
+  dfy_price_usd: 1997
+  pro_price_usd: 97
+
+sequence:
+  - step: post_x_thread
+    template: |
+      I just open-sourced the entire $5k/day OpenClaw business.
+
+      One repo. Fork it. Deploy it. Sell it.
+
+      Here's everything inside ClawSite OS 🧵👇
+
+      1/ Complete Next.js storefront (dark cyber aesthetic)
+      2/ Live OpenClaw demo playground built in
+      3/ One-click Stripe Pro Tier checkout ($97 lifetime)
+      4/ Auto-deploy to Vercel on every git push
+      5/ This exact playbook — fork → live in < 47 seconds
+
+      👉 github.com/{x_handle}/clawsite-os
+
+      Drop a 🦞 if you're forking it today.
+
+  - step: run_ads
+    platform: x
+    budget_usd: "{ad_budget_usd}"
+    target_audience:
+      - indie hackers
+      - developer tools enthusiasts
+      - no-code / low-code builders
+    creative: "One repo. Fork it. Deploy it. Sell it. 🦞"
+    link: "https://github.com/{x_handle}/clawsite-os"
+
+  - step: monitor_stripe
+    interval_minutes: 15
+    alert_on: payment_succeeded
+    log_to: "sales.log"
+
+  - step: auto_dm_buyers
+    trigger: payment_succeeded
+    message: |
+      Hey! 🦞 Thanks for grabbing ClawSite OS Pro.
+
+      Your next step: run ./install.sh and you'll be live on Vercel in minutes.
+
+      Reply here if you hit any snags — happy to help.
+
+  - step: flag_dfy_leads
+    trigger: x_reply_contains
+    keywords:
+      - "set this up for me"
+      - "can you do it for me"
+      - "done for you"
+      - "hire you"
+    action: notify_slack
+    message: "🔥 DFY lead detected — follow up at ${dfy_price_usd}"
