@@ -1,11 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
+
+type BotMessage = {
+  id: number;
+  agent: string;
+  text: string;
+  time: string;
+};
 
 export default function HomePage() {
   const [loading, setLoading] = useState(false);
+  const [botMessages, setBotMessages] = useState<BotMessage[]>([
+    { id: 0, agent: "Helix", text: "Agents online. Awaiting your commands.", time: new Date().toLocaleTimeString() },
+  ]);
+  const [botSending, setBotSending] = useState(false);
+
+  async function sendTestBotMessage() {
+    setBotSending(true);
+    try {
+      const res = await fetch('/api/bot-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agent: 'Helix',
+          message: 'Test ping from storefront — agents are live and reachable.',
+          importance: 'high',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBotMessages((prev) => [
+          ...prev,
+          { id: Date.now(), agent: 'Helix', text: 'Test ping sent. Endpoint confirmed live.', time: data.timestamp },
+        ]);
+      }
+    } catch {
+      setBotMessages((prev) => [
+        ...prev,
+        { id: Date.now(), agent: 'Error', text: 'Could not reach /api/bot-message.', time: new Date().toLocaleTimeString() },
+      ]);
+    } finally {
+      setBotSending(false);
+    }
+  }
 
   async function handleCheckout(tier: "starter" | "pro" | "empire") {
     setLoading(true);
@@ -198,6 +238,45 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Bot Status Panel */}
+      <div className="fixed bottom-6 right-6 z-50 hidden md:block w-80">
+        <div className="rounded-2xl border border-cyan-500/30 bg-zinc-900/95 p-5 shadow-[0_0_40px_-12px_rgba(34,211,238,0.4)] backdrop-blur-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
+            <p className="text-sm font-semibold text-white">Helix + Agents Online</p>
+          </div>
+
+          <div className="max-h-48 overflow-y-auto space-y-2 mb-4 pr-1">
+            <AnimatePresence initial={false}>
+              {botMessages.map((msg) => (
+                <motion.div
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-xs rounded-lg bg-zinc-800/80 border border-zinc-700/50 px-3 py-2"
+                >
+                  <span className="text-cyan-400 font-semibold">{msg.agent}</span>
+                  <span className="text-zinc-500 ml-1">· {msg.time}</span>
+                  <p className="mt-1 text-zinc-300">{msg.text}</p>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          <button
+            onClick={sendTestBotMessage}
+            disabled={botSending}
+            className="w-full py-2.5 rounded-xl bg-cyan-500 text-black text-xs font-bold hover:bg-cyan-400 transition-colors disabled:opacity-50"
+          >
+            {botSending ? 'Sending…' : 'Test Bot Message'}
+          </button>
+        </div>
+      </div>
 
       <footer className="border-t border-zinc-800 py-8 text-center text-xs text-zinc-600">
         ClawSite OS · MIT License · Built for the 2026 OpenClaw gold rush

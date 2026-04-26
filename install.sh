@@ -12,6 +12,8 @@ read -s -p "Enter Stripe Secret Key: " STRIPE_SECRET
 echo
 read -s -p "Enter Vercel Token: " VERCEL_TOKEN
 echo
+read -p "Enter Vercel Org ID: " VERCEL_ORG_ID
+read -p "Enter Vercel Project ID: " VERCEL_PROJECT_ID
 
 # Validate that required values were provided
 if [[ -z "$ANTHROPIC_KEY" || -z "$STRIPE_SECRET" || -z "$VERCEL_TOKEN" ]]; then
@@ -28,6 +30,9 @@ ANTHROPIC_API_KEY=${ANTHROPIC_KEY}
 STRIPE_SECRET_KEY=${STRIPE_SECRET}
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_REPLACE_WITH_YOUR_PUBLISHABLE_KEY
 GITHUB_TOKEN=${GITHUB_TOKEN_VALUE}
+VERCEL_TOKEN=${VERCEL_TOKEN}
+VERCEL_ORG_ID=${VERCEL_ORG_ID}
+VERCEL_PROJECT_ID=${VERCEL_PROJECT_ID}
 EOF
 
 echo "✅ Installed. Now run: npm run dev"
