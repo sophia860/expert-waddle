@@ -10,6 +10,15 @@ config:
   pro_price_usd: 97
 
 sequence:
+  - step: send_dm
+    to: "{x_handle}"
+    message: |
+      🦞 ClawSite OS launch agent is live and running.
+
+      Your sequence has started — thread posting, ads, and Stripe monitoring are all queued up.
+
+      Reply here if you need to pause or adjust anything.
+
   - step: post_x_thread
     template: |
       I just open-sourced the entire $5k/day OpenClaw business.

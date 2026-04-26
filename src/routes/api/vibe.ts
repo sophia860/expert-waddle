@@ -4,14 +4,14 @@ import { createAPIFileRoute } from "@tanstack/react-start/api";
  * POST /api/vibe
  *
  * Body: { prompt: string; connectors: string[] }
- * Response: { previewUrl: string }
+ * Response: { response: string }
  *
- * Forwards the vibe prompt to an OpenClaw / Anthropic backend and returns
- * a preview URL that the ClawPlayground drops into the live-preview iframe.
+ * Forwards the vibe prompt to a local Ollama instance and streams back the
+ * generated text.
  *
- * Set the following environment variables (Cloudflare Workers secrets or .dev.vars):
- *   OPENCLAW_API_URL  — base URL of your OpenClaw instance (required)
- *   OPENCLAW_API_KEY  — bearer token for the OpenClaw API (required)
+ * Optional environment variables:
+ *   OLLAMA_BASE_URL — base URL of your Ollama instance (default: http://localhost:11434)
+ *   OLLAMA_MODEL    — model name to use            (default: llama3.2)
  */
 export const APIRoute = createAPIFileRoute("/api/vibe")({
   POST: async ({ request }) => {
@@ -44,42 +44,41 @@ export const APIRoute = createAPIFileRoute("/api/vibe")({
     };
 
     // --- resolve env -----------------------------------------------------------
-    // In Cloudflare Workers, env vars are accessed via the global `process.env`
-    // shim provided by nodejs_compat, or injected via wrangler secrets.
-    const apiUrl = (process.env as Record<string, string | undefined>).OPENCLAW_API_URL;
-    const apiKey = (process.env as Record<string, string | undefined>).OPENCLAW_API_KEY;
+    const env = process.env as Record<string, string | undefined>;
+    const ollamaBaseUrl = env.OLLAMA_BASE_URL ?? "http://localhost:11434";
+    const ollamaModel = env.OLLAMA_MODEL ?? "llama3.2";
 
-    if (!apiUrl || !apiKey) {
-      return new Response(
-        "Server misconfiguration: OPENCLAW_API_URL and OPENCLAW_API_KEY must be set.",
-        { status: 503 }
-      );
+    // Build a system-enriched prompt that includes connectors if provided
+    const fullPrompt =
+      connectors.length > 0
+        ? `You are an expert web developer and copywriter. The user has the following connectors available: ${connectors.join(", ")}.\n\n${prompt}`
+        : prompt;
+
+    // --- call Ollama -----------------------------------------------------------
+    let upstream: Response;
+    try {
+      upstream = await fetch(`${ollamaBaseUrl}/api/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: ollamaModel, prompt: fullPrompt, stream: false }),
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return new Response(`Failed to reach Ollama at ${ollamaBaseUrl}: ${msg}`, { status: 503 });
     }
-
-    // --- call OpenClaw ---------------------------------------------------------
-    const upstream = await fetch(`${apiUrl}/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({ prompt, connectors }),
-    });
 
     if (!upstream.ok) {
       const text = await upstream.text();
-      return new Response(`OpenClaw upstream error: ${text}`, {
-        status: upstream.status,
-      });
+      return new Response(`Ollama error: ${text}`, { status: upstream.status });
     }
 
-    const data = (await upstream.json()) as { previewUrl?: string };
+    const data = (await upstream.json()) as { response?: string };
 
-    if (!data.previewUrl) {
-      return new Response("OpenClaw did not return a previewUrl", { status: 502 });
+    if (typeof data.response !== "string") {
+      return new Response("Ollama did not return a response", { status: 502 });
     }
 
-    return new Response(JSON.stringify({ previewUrl: data.previewUrl }), {
+    return new Response(JSON.stringify({ response: data.response }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

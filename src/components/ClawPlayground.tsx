@@ -13,12 +13,14 @@ export function ClawPlayground() {
   const [isRunning, setIsRunning] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [agentResponse, setAgentResponse] = useState<string | null>(null);
 
   const runVibe = async () => {
     if (!prompt.trim()) return;
     setIsRunning(true);
     setError(null);
-    setStatus("Sending prompt to OpenClaw...");
+    setAgentResponse(null);
+    setStatus("Sending prompt to Ollama...");
 
     try {
       const response = await fetch("/api/vibe", {
@@ -35,14 +37,9 @@ export function ClawPlayground() {
         throw new Error(text || `Server error: ${response.status}`);
       }
 
-      const { previewUrl } = (await response.json()) as { previewUrl: string };
-      setStatus("Rendering preview...");
-
-      const iframe = document.getElementById("preview") as HTMLIFrameElement | null;
-      if (iframe && previewUrl) {
-        iframe.src = previewUrl;
-      }
-      setStatus("Done — preview loaded!");
+      const { response: agentText } = (await response.json()) as { response: string };
+      setAgentResponse(agentText);
+      setStatus("Done — Ollama responded!");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setStatus(null);
@@ -94,7 +91,7 @@ export function ClawPlayground() {
         className="w-full py-5 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-2xl text-lg font-bold tracking-tight disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-[0_0_40px_-8px_rgba(34,211,238,0.5)]"
       >
         <Sparkles className="w-5 h-5" />
-        {isRunning ? "🦞 CLAW IS VIBING…" : "RUN OPENCLAW → GENERATE SITE"}
+        {isRunning ? "🦞 OLLAMA IS THINKING…" : "RUN OLLAMA AGENT → GENERATE"}
       </motion.button>
 
       {/* Status / error */}
@@ -111,6 +108,21 @@ export function ClawPlayground() {
             }`}
           >
             {error ?? status}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Agent response */}
+      <AnimatePresence>
+        {agentResponse && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="rounded-2xl border border-cyan-500/20 bg-zinc-900 p-5"
+          >
+            <p className="mb-2 text-xs font-mono uppercase tracking-widest text-cyan-400/60">Ollama response</p>
+            <pre className="whitespace-pre-wrap text-sm text-white/80 font-mono leading-relaxed">{agentResponse}</pre>
           </motion.div>
         )}
       </AnimatePresence>
