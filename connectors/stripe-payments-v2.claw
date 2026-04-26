@@ -1,0 +1,94 @@
+name: stripe-payments-v2
+version: "2.0"
+description: Stripe payment processing connector — charges, subscriptions, and webhooks.
+
+config:
+  secret_key: ${STRIPE_SECRET_KEY}
+  webhook_secret: ${STRIPE_WEBHOOK_SECRET}
+  api_version: "2024-04-10"
+
+capabilities:
+  - create_payment_intent
+  - create_subscription
+  - create_customer
+  - retrieve_customer
+  - handle_webhook
+
+actions:
+  create_payment_intent:
+    description: Create a Stripe PaymentIntent for a one-time charge.
+    input:
+      amount_cents:
+        type: integer
+        description: Amount in the smallest currency unit (e.g. cents for USD)
+      currency:
+        type: string
+        default: usd
+      customer_id:
+        type: string
+        required: false
+      description:
+        type: string
+        required: false
+    output:
+      payment_intent_id:
+        type: string
+      client_secret:
+        type: string
+      status:
+        type: string
+
+  create_subscription:
+    description: Subscribe a customer to a Stripe price/plan.
+    input:
+      customer_id:
+        type: string
+      price_id:
+        type: string
+    output:
+      subscription_id:
+        type: string
+      status:
+        type: string
+      current_period_end:
+        type: integer
+
+  create_customer:
+    description: Create a new Stripe customer record.
+    input:
+      email:
+        type: string
+      name:
+        type: string
+        required: false
+      metadata:
+        type: object
+        required: false
+    output:
+      customer_id:
+        type: string
+
+  retrieve_customer:
+    description: Fetch an existing Stripe customer by ID.
+    input:
+      customer_id:
+        type: string
+    output:
+      customer:
+        type: object
+
+  handle_webhook:
+    description: Verify and parse an incoming Stripe webhook event.
+    trigger: webhook
+    output:
+      event_type:
+        type: string
+      event_data:
+        type: object
+
+error_handling:
+  retry_on:
+    - rate_limit_error
+    - api_connection_error
+  max_retries: 3
+  backoff_seconds: 10

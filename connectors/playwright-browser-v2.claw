@@ -1,0 +1,100 @@
+name: playwright-browser-v2
+version: "2.0"
+description: Headless browser automation connector using Playwright.
+
+config:
+  browser: chromium
+  headless: true
+  timeout_ms: 30000
+
+capabilities:
+  - navigate
+  - click
+  - type_text
+  - screenshot
+  - extract_text
+  - wait_for_selector
+
+actions:
+  navigate:
+    description: Navigate the browser to a URL.
+    input:
+      url:
+        type: string
+      wait_until:
+        type: string
+        enum: [load, domcontentloaded, networkidle]
+        default: networkidle
+    output:
+      title:
+        type: string
+      url:
+        type: string
+
+  click:
+    description: Click an element identified by a CSS selector.
+    input:
+      selector:
+        type: string
+      timeout_ms:
+        type: integer
+        required: false
+    output:
+      success:
+        type: boolean
+
+  type_text:
+    description: Type text into a focused input element.
+    input:
+      selector:
+        type: string
+      text:
+        type: string
+      clear_first:
+        type: boolean
+        default: true
+    output:
+      success:
+        type: boolean
+
+  screenshot:
+    description: Capture a screenshot of the current page.
+    input:
+      full_page:
+        type: boolean
+        default: false
+      path:
+        type: string
+        required: false
+    output:
+      base64_image:
+        type: string
+
+  extract_text:
+    description: Extract visible text from an element or the entire page.
+    input:
+      selector:
+        type: string
+        required: false
+    output:
+      text:
+        type: string
+
+  wait_for_selector:
+    description: Wait until an element matching the selector appears.
+    input:
+      selector:
+        type: string
+      timeout_ms:
+        type: integer
+        default: 10000
+    output:
+      found:
+        type: boolean
+
+error_handling:
+  retry_on:
+    - timeout
+    - navigation_error
+  max_retries: 2
+  backoff_seconds: 3

@@ -1,0 +1,89 @@
+name: docusign-v2
+version: "2.0"
+description: DocuSign eSignature connector for sending and tracking signature envelopes.
+
+config:
+  integration_key: ${DOCUSIGN_INTEGRATION_KEY}
+  secret_key: ${DOCUSIGN_SECRET_KEY}
+  account_id: ${DOCUSIGN_ACCOUNT_ID}
+  base_url: https://na4.docusign.net/restapi
+
+capabilities:
+  - create_envelope
+  - send_envelope
+  - get_envelope_status
+  - download_signed_document
+  - void_envelope
+
+actions:
+  create_envelope:
+    description: Create a DocuSign envelope with a document and signer details.
+    input:
+      document_base64:
+        type: string
+        description: Base64-encoded PDF document
+      document_name:
+        type: string
+      signers:
+        type: array
+        items:
+          type: object
+          properties:
+            name: string
+            email: string
+            routing_order: integer
+      email_subject:
+        type: string
+    output:
+      envelope_id:
+        type: string
+
+  send_envelope:
+    description: Send a draft envelope to all recipients.
+    input:
+      envelope_id:
+        type: string
+    output:
+      status:
+        type: string
+      sent_at:
+        type: string
+
+  get_envelope_status:
+    description: Check the current status of a DocuSign envelope.
+    input:
+      envelope_id:
+        type: string
+    output:
+      status:
+        type: string
+        enum: [created, sent, delivered, signed, completed, declined, voided]
+      last_modified:
+        type: string
+
+  download_signed_document:
+    description: Download the completed signed document as a PDF.
+    input:
+      envelope_id:
+        type: string
+    output:
+      pdf_base64:
+        type: string
+
+  void_envelope:
+    description: Void an in-progress DocuSign envelope.
+    input:
+      envelope_id:
+        type: string
+      reason:
+        type: string
+    output:
+      success:
+        type: boolean
+
+error_handling:
+  retry_on:
+    - api_error
+    - rate_limit
+  max_retries: 3
+  backoff_seconds: 5

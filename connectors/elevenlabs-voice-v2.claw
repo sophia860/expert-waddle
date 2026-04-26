@@ -1,0 +1,84 @@
+name: elevenlabs-voice-v2
+version: "2.0"
+description: ElevenLabs text-to-speech and voice cloning connector.
+
+config:
+  api_key: ${ELEVENLABS_API_KEY}
+  default_voice_id: ${ELEVENLABS_DEFAULT_VOICE_ID}
+  model_id: eleven_multilingual_v2
+
+capabilities:
+  - text_to_speech
+  - list_voices
+  - clone_voice
+  - get_voice
+
+actions:
+  text_to_speech:
+    description: Convert text to speech and return an audio file.
+    input:
+      text:
+        type: string
+        description: Text to synthesise (max 5000 characters)
+      voice_id:
+        type: string
+        required: false
+        description: ElevenLabs voice ID; uses default if omitted
+      stability:
+        type: number
+        default: 0.5
+        description: Voice stability (0.0–1.0)
+      similarity_boost:
+        type: number
+        default: 0.75
+        description: Similarity boost (0.0–1.0)
+    output:
+      audio_base64:
+        type: string
+      content_type:
+        type: string
+
+  list_voices:
+    description: List all available ElevenLabs voices.
+    output:
+      voices:
+        type: array
+        items:
+          type: object
+          properties:
+            voice_id: string
+            name: string
+            category: string
+
+  clone_voice:
+    description: Clone a voice from sample audio files.
+    input:
+      name:
+        type: string
+      description:
+        type: string
+        required: false
+      sample_file_paths:
+        type: array
+        items:
+          type: string
+        description: Paths to WAV/MP3 sample files (min 1, max 25)
+    output:
+      voice_id:
+        type: string
+
+  get_voice:
+    description: Retrieve details of a specific voice.
+    input:
+      voice_id:
+        type: string
+    output:
+      voice:
+        type: object
+
+error_handling:
+  retry_on:
+    - rate_limit
+    - server_error
+  max_retries: 3
+  backoff_seconds: 10

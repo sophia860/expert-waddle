@@ -1,0 +1,85 @@
+name: baileys-whatsapp-v2
+version: "2.0"
+description: WhatsApp messaging connector via Baileys library over an ngrok tunnel.
+
+config:
+  ngrok_tunnel_url: ${WHATSAPP_NGROK_URL}
+  session_path: ./sessions/whatsapp
+
+capabilities:
+  - send_text_message
+  - send_media_message
+  - receive_message
+  - list_contacts
+  - create_group
+
+actions:
+  send_text_message:
+    description: Send a plain-text WhatsApp message to a recipient.
+    input:
+      to:
+        type: string
+        description: Recipient phone number in E.164 format (e.g. +14155550100)
+      body:
+        type: string
+        description: Message text content
+    output:
+      message_id:
+        type: string
+
+  send_media_message:
+    description: Send an image, audio, or document via WhatsApp.
+    input:
+      to:
+        type: string
+      media_url:
+        type: string
+        description: Public URL or local path of the media file
+      caption:
+        type: string
+        required: false
+    output:
+      message_id:
+        type: string
+
+  receive_message:
+    description: Subscribe to incoming WhatsApp messages (webhook).
+    trigger: webhook
+    output:
+      from:
+        type: string
+      body:
+        type: string
+      timestamp:
+        type: string
+
+  list_contacts:
+    description: Return the contact list for the connected WA session.
+    output:
+      contacts:
+        type: array
+        items:
+          type: object
+          properties:
+            id: string
+            name: string
+
+  create_group:
+    description: Create a new WhatsApp group.
+    input:
+      name:
+        type: string
+      participants:
+        type: array
+        items:
+          type: string
+    output:
+      group_id:
+        type: string
+
+error_handling:
+  retry_on:
+    - connection_timeout
+    - session_expired
+  max_retries: 3
+  backoff_seconds: 5

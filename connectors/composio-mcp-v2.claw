@@ -1,0 +1,78 @@
+name: composio-mcp-v2
+version: "2.0"
+description: Composio MCP server connector — unified tool-calling layer for AI agents.
+
+config:
+  api_key: ${COMPOSIO_API_KEY}
+  base_url: https://mcp.composio.dev
+  entity_id: default
+
+capabilities:
+  - list_tools
+  - execute_tool
+  - create_connection
+  - get_connection_status
+
+actions:
+  list_tools:
+    description: List all available Composio tools for the current entity.
+    input:
+      app_name:
+        type: string
+        required: false
+        description: Filter tools by application name (e.g. "github", "notion")
+    output:
+      tools:
+        type: array
+        items:
+          type: object
+          properties:
+            name: string
+            description: string
+            parameters: object
+
+  execute_tool:
+    description: Execute a Composio tool by name with given parameters.
+    input:
+      tool_name:
+        type: string
+      parameters:
+        type: object
+    output:
+      result:
+        type: object
+      status:
+        type: string
+
+  create_connection:
+    description: Initiate an OAuth connection for a Composio app.
+    input:
+      app_name:
+        type: string
+      redirect_url:
+        type: string
+        required: false
+    output:
+      connection_id:
+        type: string
+      auth_url:
+        type: string
+
+  get_connection_status:
+    description: Check the status of a Composio app connection.
+    input:
+      connection_id:
+        type: string
+    output:
+      status:
+        type: string
+        enum: [active, pending, expired, error]
+      app_name:
+        type: string
+
+error_handling:
+  retry_on:
+    - rate_limit
+    - server_error
+  max_retries: 3
+  backoff_seconds: 5
