@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Zap, Rocket, Github, Shield, Users, Sparkles, Terminal, GitBranch } from "lucide-react";
+import { Zap, Rocket, Github as GithubIcon, Shield, Users, Sparkles, Terminal, GitBranch } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
