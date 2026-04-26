@@ -181,7 +181,7 @@ function Index() {
 
           <div className="grid md:grid-cols-3 gap-5">
             {[
-              { i: Github, t: "GitHub Sync", d: "Auto-pulls README, stars, releases. Your repo becomes a living storefront." },
+              { i: GithubIcon, t: "GitHub Sync", d: "Auto-pulls README, stars, releases. Your repo becomes a living storefront." },
               { i: Sparkles, t: "Agent Personalization", d: "OpenClaw rewrites your headline for every visitor segment in real time." },
               { i: Rocket, t: "1-Click Vercel", d: "Fork, deploy, profit. Edge-cached globally in under a minute." },
               { i: Shield, t: "Built-in Stripe", d: "Tier pricing from $497 to $1997 wired up out of the box." },
@@ -271,7 +271,7 @@ function Index() {
             href="https://github.com"
             className="inline-flex items-center gap-4 px-10 py-5 text-lg md:text-xl font-bold bg-gradient-to-r from-claw-cyan to-claw-purple rounded-2xl hover:scale-[1.03] transition shadow-[0_0_60px_-15px_var(--color-claw-purple)]"
           >
-            <Github className="w-6 h-6" />
+            <GithubIcon className="w-6 h-6" />
             FORK THE VIBE CODE
             <span className="text-2xl">→</span>
           </a>
