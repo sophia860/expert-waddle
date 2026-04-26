@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Zap, Rocket, Github as GithubIcon, Shield, Users, Sparkles, Terminal, GitBranch } from "lucide-react";
+import {
+  Zap,
+  Rocket,
+  Github as GithubIcon,
+  Shield,
+  Users,
+  Sparkles,
+  Terminal,
+  GitBranch,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -15,7 +24,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "ClawSite OS — Your Repo, Now a Money Machine" },
       {
         property: "og:description",
-        content: "Sleek, dark, OpenClaw-powered storefronts that convert 10x better than raw GitHub.",
+        content:
+          "Sleek, dark, OpenClaw-powered storefronts that convert 10x better than raw GitHub.",
       },
     ],
   }),
@@ -51,9 +61,15 @@ function Index() {
             </span>
           </div>
           <div className="hidden md:flex gap-8 text-xs uppercase tracking-[0.2em] text-foreground/70">
-            <a href="#demo" className="hover:text-claw-cyan transition">Live Demo</a>
-            <a href="#features" className="hover:text-claw-cyan transition">Connectors</a>
-            <a href="#pricing" className="hover:text-claw-cyan transition">Get It</a>
+            <a href="#demo" className="hover:text-claw-cyan transition">
+              Live Demo
+            </a>
+            <a href="#features" className="hover:text-claw-cyan transition">
+              Connectors
+            </a>
+            <a href="#pricing" className="hover:text-claw-cyan transition">
+              Get It
+            </a>
           </div>
           <a
             href="#deploy"
@@ -128,11 +144,16 @@ function Index() {
               { v: "47s", l: "To Deploy" },
               { v: "$1997", l: "Avg Sale" },
             ].map((s) => (
-              <div key={s.l} className="border border-white/10 rounded-2xl p-6 bg-white/[0.02] backdrop-blur">
+              <div
+                key={s.l}
+                className="border border-white/10 rounded-2xl p-6 bg-white/[0.02] backdrop-blur"
+              >
                 <div className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-claw-cyan to-claw-purple bg-clip-text text-transparent">
                   {s.v}
                 </div>
-                <div className="text-xs uppercase tracking-widest text-foreground/50 mt-2">{s.l}</div>
+                <div className="text-xs uppercase tracking-widest text-foreground/50 mt-2">
+                  {s.l}
+                </div>
               </div>
             ))}
           </div>
@@ -143,7 +164,9 @@ function Index() {
       <section id="demo" className="relative z-10 border-t border-white/10 py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <p className="text-xs uppercase tracking-[0.3em] text-claw-cyan mb-3">// LIVE_PLAYGROUND</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-claw-cyan mb-3">
+              // LIVE_PLAYGROUND
+            </p>
             <h2 className="text-4xl md:text-6xl font-bold tracking-tighter">
               Watch Your Repo Sell Itself
             </h2>
@@ -173,7 +196,9 @@ function Index() {
       <section id="features" className="relative z-10 border-t border-white/10 py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-xs uppercase tracking-[0.3em] text-claw-purple mb-3">// CONNECTORS</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-claw-purple mb-3">
+              // CONNECTORS
+            </p>
             <h2 className="text-4xl md:text-6xl font-bold tracking-tighter">
               Plug In. <span className="text-foreground/40">Print Money.</span>
             </h2>
@@ -181,12 +206,36 @@ function Index() {
 
           <div className="grid md:grid-cols-3 gap-5">
             {[
-              { i: GithubIcon, t: "GitHub Sync", d: "Auto-pulls README, stars, releases. Your repo becomes a living storefront." },
-              { i: Sparkles, t: "Agent Personalization", d: "OpenClaw rewrites your headline for every visitor segment in real time." },
-              { i: Rocket, t: "1-Click Vercel", d: "Fork, deploy, profit. Edge-cached globally in under a minute." },
-              { i: Shield, t: "Built-in Stripe", d: "Tier pricing from $497 to $1997 wired up out of the box." },
-              { i: GitBranch, t: "Repo Variants", d: "Generate personalized sites for every fork or product line." },
-              { i: Users, t: "Lead Capture", d: "Every star becomes an email. Every email becomes a customer." },
+              {
+                i: GithubIcon,
+                t: "GitHub Sync",
+                d: "Auto-pulls README, stars, releases. Your repo becomes a living storefront.",
+              },
+              {
+                i: Sparkles,
+                t: "Agent Personalization",
+                d: "OpenClaw rewrites your headline for every visitor segment in real time.",
+              },
+              {
+                i: Rocket,
+                t: "1-Click Vercel",
+                d: "Fork, deploy, profit. Edge-cached globally in under a minute.",
+              },
+              {
+                i: Shield,
+                t: "Built-in Stripe",
+                d: "Tier pricing from $497 to $1997 wired up out of the box.",
+              },
+              {
+                i: GitBranch,
+                t: "Repo Variants",
+                d: "Generate personalized sites for every fork or product line.",
+              },
+              {
+                i: Users,
+                t: "Lead Capture",
+                d: "Every star becomes an email. Every email becomes a customer.",
+              },
             ].map((f) => (
               <div
                 key={f.t}
@@ -212,9 +261,22 @@ function Index() {
 
           <div className="grid md:grid-cols-3 gap-5">
             {[
-              { n: "STARTER", p: "$497", f: ["1 ClawSite", "GitHub sync", "Stripe checkout", "Email capture"] },
-              { n: "OPERATOR", p: "$997", f: ["5 ClawSites", "Agent personalization", "Custom domains", "Priority support"], hi: true },
-              { n: "EMPIRE", p: "$1997", f: ["Unlimited sites", "Master OpenClaw agent", "White label", "Revenue share"] },
+              {
+                n: "STARTER",
+                p: "$497",
+                f: ["1 ClawSite", "GitHub sync", "Stripe checkout", "Email capture"],
+              },
+              {
+                n: "OPERATOR",
+                p: "$997",
+                f: ["5 ClawSites", "Agent personalization", "Custom domains", "Priority support"],
+                hi: true,
+              },
+              {
+                n: "EMPIRE",
+                p: "$1997",
+                f: ["Unlimited sites", "Master OpenClaw agent", "White label", "Revenue share"],
+              },
             ].map((t) => (
               <div
                 key={t.n}
@@ -229,11 +291,16 @@ function Index() {
                     Most Picked
                   </div>
                 )}
-                <div className="text-xs uppercase tracking-[0.25em] text-foreground/50 mb-4">{t.n}</div>
+                <div className="text-xs uppercase tracking-[0.25em] text-foreground/50 mb-4">
+                  {t.n}
+                </div>
                 <div className="text-5xl font-bold tracking-tighter mb-6">{t.p}</div>
                 <ul className="space-y-3 mb-8">
                   {t.f.map((feat) => (
-                    <li key={feat} className="flex items-center gap-3 text-sm text-foreground/70 font-sans">
+                    <li
+                      key={feat}
+                      className="flex items-center gap-3 text-sm text-foreground/70 font-sans"
+                    >
                       <div className="w-1.5 h-1.5 rounded-full bg-claw-cyan" />
                       {feat}
                     </li>
@@ -262,7 +329,10 @@ function Index() {
           <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6">
             Ready to turn your repo
             <br />
-            into a <span className="bg-gradient-to-r from-claw-cyan to-claw-pink bg-clip-text text-transparent">business?</span>
+            into a{" "}
+            <span className="bg-gradient-to-r from-claw-cyan to-claw-pink bg-clip-text text-transparent">
+              business?
+            </span>
           </h2>
           <p className="text-lg text-foreground/50 mb-12 font-sans">
             Fork the vibe code. Deploy on Vercel. Wake up to Stripe pings.

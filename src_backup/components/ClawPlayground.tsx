@@ -121,8 +121,12 @@ export function ClawPlayground() {
             exit={{ opacity: 0 }}
             className="rounded-2xl border border-cyan-500/20 bg-zinc-900 p-5"
           >
-            <p className="mb-2 text-xs font-mono uppercase tracking-widest text-cyan-400/60">Ollama response</p>
-            <pre className="whitespace-pre-wrap text-sm text-white/80 font-mono leading-relaxed">{agentResponse}</pre>
+            <p className="mb-2 text-xs font-mono uppercase tracking-widest text-cyan-400/60">
+              Ollama response
+            </p>
+            <pre className="whitespace-pre-wrap text-sm text-white/80 font-mono leading-relaxed">
+              {agentResponse}
+            </pre>
           </motion.div>
         )}
       </AnimatePresence>

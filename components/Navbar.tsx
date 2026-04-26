@@ -6,6 +6,19 @@ import { useState } from "react";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
+  async function handleCheckout(tier: "starter" | "pro" | "empire" = "pro") {
+    try {
+      const res = await fetch(`/api/checkout?tier=${tier}`, { method: "POST" });
+      if (!res.ok) {
+        return;
+      }
+      const { url } = await res.json();
+      window.location.href = url;
+    } catch {
+      // silently ignore
+    }
+  }
+
   return (
     <header className="fixed top-0 z-50 w-full border-b border-zinc-800 bg-[#0a0a0f]/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
@@ -26,19 +39,19 @@ export default function Navbar() {
             Pricing
           </Link>
           <a
-            href="https://github.com/YOURUSERNAME/clawsite-os"
+            href="https://github.com/sophia860/expert-waddle"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             GitHub
           </a>
-          <a
-            href="/api/checkout"
+          <button
+            onClick={() => handleCheckout("pro")}
             className="rounded-lg bg-cyan-500 px-4 py-1.5 text-xs font-bold text-black hover:bg-cyan-400 transition-colors"
           >
-            Get Pro — $97
-          </a>
+            Get Pro — $997
+          </button>
         </nav>
 
         {/* Mobile toggle */}
@@ -61,19 +74,22 @@ export default function Navbar() {
             Pricing
           </Link>
           <a
-            href="https://github.com/YOURUSERNAME/clawsite-os"
+            href="https://github.com/sophia860/expert-waddle"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white"
           >
             GitHub
           </a>
-          <a
-            href="/api/checkout"
+          <button
+            onClick={() => {
+              setOpen(false);
+              handleCheckout("pro");
+            }}
             className="w-fit rounded-lg bg-cyan-500 px-4 py-1.5 text-xs font-bold text-black hover:bg-cyan-400"
           >
-            Get Pro — $97
-          </a>
+            Get Pro — $997
+          </button>
         </div>
       )}
     </header>
