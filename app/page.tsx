@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/Navbar";
+import Navbar from "../components/Navbar";
 
 async function startCheckout(tier: "starter" | "operator" | "empire") {
   const res = await fetch(`/api/checkout?tier=${tier}`, { method: "POST" });
