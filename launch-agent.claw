@@ -3,11 +3,11 @@
 # Edit the values below before running.
 
 config:
-  x_handle: "@YOURUSERNAME"
-  stripe_product_id: "prod_REPLACE_ME"
+  x_handle: "@sophia860"
+  stripe_product_id: "prod_clawsite_os_main"
   ad_budget_usd: 200
   dfy_price_usd: 1997
-  pro_price_usd: 97
+  pro_price_usd: 997
 
 sequence:
   - step: send_dm
@@ -29,7 +29,7 @@ sequence:
 
       1/ Complete Next.js storefront (dark cyber aesthetic)
       2/ Live OpenClaw demo playground built in
-      3/ One-click Stripe Pro Tier checkout ($97 lifetime)
+      3/ One-click Stripe checkout tiers ($497 / $997 / $1997)
       4/ Auto-deploy to Vercel on every git push
       5/ This exact playbook — fork → live in < 47 seconds
 

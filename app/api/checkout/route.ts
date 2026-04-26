@@ -5,8 +5,36 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
-export async function POST() {
+const TIERS = {
+  starter: {
+    name: "ClawSite OS - Starter Tier",
+    description: "Starter package for ClawSite OS",
+    unitAmount: 49700,
+  },
+  operator: {
+    name: "ClawSite OS - Operator Tier",
+    description: "Operator package for ClawSite OS",
+    unitAmount: 99700,
+  },
+  empire: {
+    name: "ClawSite OS - Empire Tier",
+    description: "Empire package for ClawSite OS",
+    unitAmount: 199700,
+  },
+} as const;
+
+export async function POST(request: Request) {
   try {
+    const url = new URL(request.url);
+    const requestedTier = url.searchParams.get("tier");
+    const tierKey =
+      requestedTier === "starter" || requestedTier === "operator" || requestedTier === "empire"
+        ? requestedTier
+        : "operator";
+    const tier = TIERS[tierKey];
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || url.origin;
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -14,17 +42,17 @@ export async function POST() {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "ClawSite OS — Pro Tier",
-              description: "Lifetime access to ClawSite OS Pro Tier",
+              name: tier.name,
+              description: tier.description,
             },
-            unit_amount: 9700, // $97.00
+            unit_amount: tier.unitAmount,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+      success_url: `${baseUrl}/success?tier=${tierKey}`,
+      cancel_url: `${baseUrl}/`,
     });
 
     return NextResponse.json({ url: session.url });
