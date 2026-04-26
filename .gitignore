@@ -8,6 +8,14 @@ node_modules/
 out/
 build/
 
+# Vite / TanStack build output
+dist
+dist-ssr
+.output
+.vinxi
+.tanstack/**
+.nitro
+
 # Environment files — NEVER commit these
 .env
 .env.local
@@ -15,21 +23,35 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+*.local
 
 # Vercel
 .vercel
 
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
 # Debug logs
+logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # OS
 .DS_Store
 Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # Editor
 .vscode/settings.json
+!.vscode/extensions.json
 .idea/
 
 # Runtime logs
