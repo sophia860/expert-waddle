@@ -1,0 +1,108 @@
+name: x-api-v2
+version: "2.0"
+description: X (Twitter) API v2 connector for posting, searching, and DM automation.
+
+config:
+  bearer_token: ${X_BEARER_TOKEN}
+  consumer_key: ${X_CONSUMER_KEY}
+  consumer_secret: ${X_CONSUMER_SECRET}
+  access_token: ${X_ACCESS_TOKEN}
+  access_token_secret: ${X_ACCESS_TOKEN_SECRET}
+
+capabilities:
+  - create_tweet
+  - reply_to_tweet
+  - search_tweets
+  - send_dm
+  - get_user_info
+
+actions:
+  create_tweet:
+    description: Post a new tweet to the authenticated account.
+    input:
+      text:
+        type: string
+        description: Tweet text (max 280 characters)
+      media_ids:
+        type: array
+        items:
+          type: string
+        required: false
+    output:
+      tweet_id:
+        type: string
+      url:
+        type: string
+
+  reply_to_tweet:
+    description: Reply to an existing tweet.
+    input:
+      reply_to_tweet_id:
+        type: string
+      text:
+        type: string
+    output:
+      tweet_id:
+        type: string
+
+  search_tweets:
+    description: Search recent tweets using X API v2 query syntax.
+    input:
+      query:
+        type: string
+        description: X query string (e.g. "#OpenClaw lang:en -is:retweet")
+      max_results:
+        type: integer
+        default: 10
+      start_time:
+        type: string
+        required: false
+    output:
+      tweets:
+        type: array
+        items:
+          type: object
+          properties:
+            id: string
+            text: string
+            author_id: string
+            created_at: string
+
+  send_dm:
+    description: Send a direct message to a user.
+    input:
+      recipient_id:
+        type: string
+      text:
+        type: string
+    output:
+      dm_conversation_id:
+        type: string
+      message_id:
+        type: string
+
+  get_user_info:
+    description: Look up a user by username or ID.
+    input:
+      username:
+        type: string
+        required: false
+      user_id:
+        type: string
+        required: false
+    output:
+      user_id:
+        type: string
+      username:
+        type: string
+      name:
+        type: string
+      followers_count:
+        type: integer
+
+error_handling:
+  retry_on:
+    - rate_limit
+    - service_unavailable
+  max_retries: 3
+  backoff_seconds: 60

@@ -1,0 +1,106 @@
+name: obsidian-memory-v2
+version: "2.0"
+description: Obsidian local vault connector for persistent agent memory and knowledge retrieval.
+
+config:
+  vault_path: ${OBSIDIAN_VAULT_PATH}
+  index_file: .claw-index.json
+
+capabilities:
+  - write_note
+  - read_note
+  - search_notes
+  - delete_note
+  - list_notes
+
+actions:
+  write_note:
+    description: Create or overwrite a note in the Obsidian vault.
+    input:
+      filename:
+        type: string
+        description: Note filename without extension (e.g. "meeting-2026-05-01")
+      content:
+        type: string
+        description: Markdown content for the note
+      folder:
+        type: string
+        required: false
+        description: Sub-folder path inside the vault (e.g. "memories/contacts")
+      tags:
+        type: array
+        items:
+          type: string
+        required: false
+    output:
+      file_path:
+        type: string
+      created_at:
+        type: string
+
+  read_note:
+    description: Read the full content of a note by filename.
+    input:
+      filename:
+        type: string
+      folder:
+        type: string
+        required: false
+    output:
+      content:
+        type: string
+      modified_at:
+        type: string
+
+  search_notes:
+    description: Full-text search across all notes in the vault.
+    input:
+      query:
+        type: string
+      max_results:
+        type: integer
+        default: 10
+    output:
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            file_path: string
+            excerpt: string
+            score: number
+
+  delete_note:
+    description: Delete a note from the vault.
+    input:
+      filename:
+        type: string
+      folder:
+        type: string
+        required: false
+    output:
+      success:
+        type: boolean
+
+  list_notes:
+    description: List all notes in a folder (or the whole vault).
+    input:
+      folder:
+        type: string
+        required: false
+    output:
+      notes:
+        type: array
+        items:
+          type: object
+          properties:
+            filename: string
+            folder: string
+            modified_at: string
+
+error_handling:
+  retry_on:
+    - file_lock
+    - io_error
+  max_retries: 2
+  backoff_seconds: 1

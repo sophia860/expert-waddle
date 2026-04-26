@@ -1,0 +1,110 @@
+name: cal-com-v2
+version: "2.0"
+description: Cal.com booking connector for scheduling, availability, and event management.
+
+config:
+  api_key: ${CALCOM_API_KEY}
+  base_url: https://api.cal.com/v1
+
+capabilities:
+  - get_availability
+  - create_booking
+  - cancel_booking
+  - list_bookings
+  - get_event_types
+
+actions:
+  get_availability:
+    description: Retrieve available time slots for a Cal.com event type.
+    input:
+      event_type_id:
+        type: integer
+      start_date:
+        type: string
+        description: Start of availability window (YYYY-MM-DD)
+      end_date:
+        type: string
+        description: End of availability window (YYYY-MM-DD)
+      timezone:
+        type: string
+        default: UTC
+    output:
+      slots:
+        type: array
+        items:
+          type: object
+          properties:
+            time: string
+            available: boolean
+
+  create_booking:
+    description: Book a meeting slot via Cal.com.
+    input:
+      event_type_id:
+        type: integer
+      start:
+        type: string
+        description: ISO 8601 datetime for the booking start
+      name:
+        type: string
+      email:
+        type: string
+      timezone:
+        type: string
+        default: UTC
+      notes:
+        type: string
+        required: false
+    output:
+      booking_id:
+        type: integer
+      meeting_url:
+        type: string
+      confirmation_url:
+        type: string
+
+  cancel_booking:
+    description: Cancel an existing Cal.com booking.
+    input:
+      booking_id:
+        type: integer
+      reason:
+        type: string
+        required: false
+    output:
+      success:
+        type: boolean
+
+  list_bookings:
+    description: List upcoming bookings for the authenticated account.
+    input:
+      status:
+        type: string
+        enum: [upcoming, past, cancelled]
+        default: upcoming
+      max_results:
+        type: integer
+        default: 20
+    output:
+      bookings:
+        type: array
+
+  get_event_types:
+    description: List all event types configured in the Cal.com account.
+    output:
+      event_types:
+        type: array
+        items:
+          type: object
+          properties:
+            id: integer
+            title: string
+            duration: integer
+            slug: string
+
+error_handling:
+  retry_on:
+    - rate_limit
+    - server_error
+  max_retries: 3
+  backoff_seconds: 5

@@ -1,0 +1,132 @@
+name: launch-agent
+version: "2.0"
+description: >
+  Autonomous launch agent for GitHubClaw OS.
+  Auto-generates 8 X threads, manages a $200 ad budget,
+  and runs a DM funnel across X, LinkedIn, and Telegram.
+
+config:
+  offer_url: ${OFFER_URL}
+  offer_price: 497
+  offer_name: "ConnectorClaw Bundle v2"
+  repo_url: ${REPO_URL}
+  ad_budget_usd: 200
+  x_thread_stagger_minutes: 45
+  dm_follow_up_hours: 24
+
+agent:
+  model: claude-opus-4.6
+  system_prompt: >
+    You are a world-class growth marketer specialising in developer tools
+    and AI automation products. Your goal is to generate maximum qualified
+    leads for the ConnectorClaw Bundle v2 ($497) via authentic, high-value
+    content — not spam. Every message must lead with genuine value before
+    the offer.
+
+workflows:
+  full_launch:
+    description: Run the complete launch sequence.
+    steps:
+      - id: generate_x_threads
+        action: generate_content
+        params:
+          type: x_thread
+          count: 8
+          topics:
+            - "12 connectors that saved me 6 hours of API wiring"
+            - "WhatsApp + Stripe + Telegram in one GitHub repo"
+            - "How I built a $497 product in 47 seconds (fork this)"
+            - "The OpenClaw connector bundle everyone is copying"
+            - "Why fragmented API keys are killing your automation stack"
+            - "One install.sh to wire 12 production connectors"
+            - "I open-sourced my entire $5k/day connector stack"
+            - "ConnectorClaw v2 launch: 12 skills, 1 repo, 0 setup pain"
+
+      - id: post_x_threads
+        depends_on: generate_x_threads
+        action: post_content
+        connector: x-api-v2
+        params:
+          stagger_minutes: ${config.x_thread_stagger_minutes}
+          include_repo_link: true
+
+      - id: generate_dm_sequence
+        action: generate_content
+        params:
+          type: dm_sequence
+          steps: 3
+          tone: consultative
+          offer_cta_on_step: 2
+
+      - id: run_linkedin_outreach
+        depends_on: generate_dm_sequence
+        action: outreach_campaign
+        connector: heyreach-linkedin-v2
+        params:
+          target_keywords:
+            - "AI automation"
+            - "no-code tools"
+            - "WhatsApp business"
+            - "API integration"
+          max_prospects: 50
+          message_template: ${dm_sequence.step_1}
+
+      - id: telegram_broadcast
+        action: broadcast
+        connector: telegram-bot-v2
+        params:
+          message_template: >
+            🚀 ConnectorClaw Bundle v2 is live!
+            12 production-ready connectors (WhatsApp, Stripe, LinkedIn, +9 more).
+            Fork the repo, run install.sh, and you're live in 47 seconds.
+            👉 ${config.offer_url}
+
+      - id: track_results
+        depends_on:
+          - post_x_threads
+          - run_linkedin_outreach
+          - telegram_broadcast
+        action: collect_metrics
+        params:
+          metrics:
+            - x_impressions
+            - x_clicks
+            - linkedin_connection_requests
+            - telegram_clicks
+            - stripe_sales
+          report_interval_hours: 4
+
+  dm_followup:
+    description: Send follow-up DMs 24 hours after initial contact.
+    steps:
+      - id: identify_warm_leads
+        action: filter_leads
+        params:
+          criteria:
+            - replied_to_initial_dm: true
+            - purchased: false
+            - hours_since_contact:
+                gte: 20
+                lte: 28
+
+      - id: send_followup
+        depends_on: identify_warm_leads
+        action: send_dm_batch
+        connector: x-api-v2
+        params:
+          template: >
+            Hey, just checking in — did you get a chance to look at the
+            ConnectorClaw repo? Happy to answer any questions or walk
+            you through the install. The $497 bundle includes lifetime
+            updates. 👉 ${config.offer_url}
+
+error_handling:
+  on_x_rate_limit:
+    action: pause_and_resume
+    wait_minutes: 60
+  on_linkedin_rate_limit:
+    action: switch_to_organic
+    fallback_channel: x-api-v2
+  on_stripe_error:
+    action: alert_and_log
+    log_file: logs/launch-agent-errors.log

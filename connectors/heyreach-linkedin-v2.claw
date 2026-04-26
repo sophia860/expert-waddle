@@ -1,0 +1,86 @@
+name: heyreach-linkedin-v2
+version: "2.0"
+description: LinkedIn outreach automation connector via HeyReach MCP.
+
+config:
+  api_key: ${HEYREACH_API_KEY}
+  base_url: https://api.heyreach.io/api/public
+
+capabilities:
+  - create_campaign
+  - add_leads
+  - send_connection_request
+  - send_message
+  - get_campaign_stats
+
+actions:
+  create_campaign:
+    description: Create a new HeyReach LinkedIn outreach campaign.
+    input:
+      name:
+        type: string
+      linkedin_account_id:
+        type: string
+    output:
+      campaign_id:
+        type: string
+
+  add_leads:
+    description: Add leads (LinkedIn profile URLs) to a campaign.
+    input:
+      campaign_id:
+        type: string
+      profile_urls:
+        type: array
+        items:
+          type: string
+    output:
+      added_count:
+        type: integer
+
+  send_connection_request:
+    description: Send a personalised LinkedIn connection request.
+    input:
+      profile_url:
+        type: string
+      note:
+        type: string
+        required: false
+    output:
+      request_id:
+        type: string
+      status:
+        type: string
+
+  send_message:
+    description: Send a LinkedIn message to a 1st-degree connection.
+    input:
+      profile_url:
+        type: string
+      message:
+        type: string
+    output:
+      message_id:
+        type: string
+
+  get_campaign_stats:
+    description: Retrieve statistics for a campaign.
+    input:
+      campaign_id:
+        type: string
+    output:
+      sent:
+        type: integer
+      accepted:
+        type: integer
+      replied:
+        type: integer
+      acceptance_rate:
+        type: number
+
+error_handling:
+  retry_on:
+    - rate_limit
+    - timeout
+  max_retries: 3
+  backoff_seconds: 30

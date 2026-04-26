@@ -1,0 +1,133 @@
+name: pro-tier-updater
+version: "2.0"
+description: >
+  Autonomous Pro Tier maintenance agent.
+  Nightly: pulls latest connector optimisations, runs regression tests,
+  and pushes verified updates to all Pro Tier buyers' forked repos.
+
+config:
+  pro_repo_name: ${PRO_VAULT_REPO}
+  github_token: ${GITHUB_TOKEN}
+  update_schedule: "0 2 * * *"
+  test_before_push: true
+  notify_buyers_on_update: true
+
+agent:
+  model: claude-opus-4.6
+  system_prompt: >
+    You are a senior DevOps engineer maintaining a high-value SaaS connector
+    bundle. Your job is to keep all 12 connectors working perfectly against
+    their live APIs, ship only regression-tested updates, and communicate
+    clearly with Pro Tier buyers about every change.
+
+workflows:
+  nightly_update:
+    description: Full nightly update cycle for all Pro Tier connectors.
+    steps:
+      - id: check_api_changelogs
+        action: fetch_changelogs
+        params:
+          sources:
+            - name: Anthropic
+              url: https://docs.anthropic.com/changelog
+            - name: Stripe
+              url: https://stripe.com/docs/upgrades
+            - name: ElevenLabs
+              url: https://elevenlabs.io/changelog
+            - name: Composio
+              url: https://docs.composio.dev/changelog
+            - name: X API
+              url: https://developer.x.com/en/changelog
+            - name: Cal.com
+              url: https://cal.com/changelog
+
+      - id: diff_changes
+        depends_on: check_api_changelogs
+        action: detect_breaking_changes
+        params:
+          connector_files: ./connectors/*.claw
+
+      - id: patch_connectors
+        depends_on: diff_changes
+        condition: "diff_changes.breaking_changes > 0"
+        action: auto_patch
+        params:
+          use_model: claude-opus-4.6
+          patch_strategy: minimal_change
+
+      - id: run_regression_tests
+        depends_on: patch_connectors
+        action: test_connectors
+        params:
+          test_suite: ./tests/connectors/
+          abort_on_failure: true
+
+      - id: commit_and_push
+        depends_on: run_regression_tests
+        action: git_push
+        params:
+          branch: pro-tier-updates
+          commit_message: "chore: nightly connector update [automated]"
+          target_repo: ${config.pro_repo_name}
+
+      - id: notify_buyers
+        depends_on: commit_and_push
+        condition: "${config.notify_buyers_on_update}"
+        action: send_update_notification
+        connector: telegram-bot-v2
+        params:
+          message_template: >
+            🔄 Pro Tier Update — ${today}
+
+            ${patch_connectors.summary}
+
+            Connectors updated: ${patch_connectors.updated_count}
+            Pull latest: git pull origin pro-tier-updates
+
+            Questions? Reply here.
+
+  send_upsell_sequence:
+    description: Send the Pro Tier upsell sequence to recent bundle buyers.
+    steps:
+      - id: fetch_recent_buyers
+        action: query_stripe
+        connector: stripe-payments-v2
+        params:
+          product_name: "ConnectorClaw Bundle v2"
+          purchased_within_hours: 48
+
+      - id: filter_non_pro
+        depends_on: fetch_recent_buyers
+        action: filter_list
+        params:
+          exclude_tag: pro_tier_buyer
+
+      - id: send_upsell_dm
+        depends_on: filter_non_pro
+        action: send_dm_batch
+        connector: telegram-bot-v2
+        params:
+          template: >
+            Hey! Quick heads-up — I just shipped a Pro Tier upgrade ($97 lifetime).
+
+            What you get:
+            ✅ Nightly auto-updates to all 12 connectors
+            ✅ Private stealth optimisation patches
+            ✅ Priority ClawHub Discord access
+            ✅ Early access to new connectors
+
+            One-time $97: ${PRO_TIER_URL}
+
+            (Limited to first 100 buyers — ${pro_tier_slots_remaining} spots left)
+
+error_handling:
+  on_test_failure:
+    action: skip_push_and_alert
+    alert_channel: telegram
+  on_github_api_error:
+    action: retry
+    max_retries: 3
+    backoff_minutes: 10
+  on_notification_failure:
+    action: log_and_continue
+    log_file: logs/pro-tier-updater-errors.log
