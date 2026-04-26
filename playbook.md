@@ -10,7 +10,7 @@ This playbook walks you through launching ClawSite OS from a fresh fork to your 
 1. Fork this repo on GitHub and make it public.
 2. Clone locally:
    ```bash
-   git clone https://github.com/sophia860/clawsite-os.git
+   git clone https://github.com/YOURUSERNAME/clawsite-os.git
    cd clawsite-os
    chmod +x install.sh
    ./install.sh
@@ -42,8 +42,7 @@ This playbook walks you through launching ClawSite OS from a fresh fork to your 
 ## Phase 3 — Close Sales (4–24 h)
 
 **Targets:**
-- 3-5 Starter sales @ $497
-- 2-4 Operator sales @ $997
+- 8–12 Pro Tier sales @ $97
 - 2–3 Done-For-You (DFY) engagements @ $1,997
 
 **Channels:**

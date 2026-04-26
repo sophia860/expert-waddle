@@ -96,7 +96,7 @@ function RootComponent() {
           </div>
           <div className="flex items-center gap-4 text-sm text-white/50">
             <a
-              href="https://github.com/sophia860/clawsite-os"
+              href="https://github.com/sophia860/expert-waddle"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white transition-colors"

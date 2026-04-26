@@ -3,17 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 
-async function checkoutStarter() {
-  const res = await fetch("/api/checkout?tier=starter", { method: "POST" });
-  const data = await res.json();
-  if (data.url) window.location.href = data.url;
-}
-
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-zinc-800 bg-[#06080d]/80 backdrop-blur-md">
+    <header className="fixed top-0 z-50 w-full border-b border-zinc-800 bg-[#0a0a0f]/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-sm font-bold text-white">
@@ -32,19 +26,19 @@ export default function Navbar() {
             Pricing
           </Link>
           <a
-            href="https://github.com/sophia860/clawsite-os"
+            href="https://github.com/YOURUSERNAME/clawsite-os"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
             GitHub
           </a>
-          <button
-            onClick={checkoutStarter}
+          <a
+            href="/api/checkout"
             className="rounded-lg bg-cyan-500 px-4 py-1.5 text-xs font-bold text-black hover:bg-cyan-400 transition-colors"
           >
-            Get Starter — $497
-          </button>
+            Get Pro — $97
+          </a>
         </nav>
 
         {/* Mobile toggle */}
@@ -67,19 +61,19 @@ export default function Navbar() {
             Pricing
           </Link>
           <a
-            href="https://github.com/sophia860/clawsite-os"
+            href="https://github.com/YOURUSERNAME/clawsite-os"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white"
           >
             GitHub
           </a>
-          <button
-            onClick={() => { setOpen(false); checkoutStarter(); }}
+          <a
+            href="/api/checkout"
             className="w-fit rounded-lg bg-cyan-500 px-4 py-1.5 text-xs font-bold text-black hover:bg-cyan-400"
           >
-            Get Starter — $497
-          </button>
+            Get Pro — $97
+          </a>
         </div>
       )}
     </header>
