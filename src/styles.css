@@ -4,6 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-mono: "Space Grotesk", ui-monospace, monospace;
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --color-claw-cyan: oklch(0.86 0.16 210);
+  --color-claw-purple: oklch(0.55 0.27 300);
+  --color-claw-pink: oklch(0.68 0.28 350);
+}
+
 /*
  * Design system definition.
  *
@@ -63,8 +71,8 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --background: oklch(0.04 0.01 280);
+  --foreground: oklch(0.98 0.005 280);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
